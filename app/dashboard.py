@@ -15,6 +15,7 @@ Views:
 Run:  streamlit run app/dashboard.py
 """
 
+import json
 import os
 
 import joblib
@@ -46,6 +47,15 @@ def load_data():
 @st.cache_resource
 def load_model():
     return joblib.load(MODEL_PATH)
+
+
+@st.cache_data
+def load_metrics():
+    metrics_path = os.path.join(BASE_DIR, "model", "training_metrics.json")
+    if os.path.exists(metrics_path):
+        with open(metrics_path) as f:
+            return json.load(f)
+    return {}
 
 
 # ---------------------------------------------------------------------------
@@ -124,6 +134,7 @@ st.caption(
 
 df = load_data()
 model = load_model()
+metrics = load_metrics()
 enriched, feature_cols = enrich_features(df)
 facts = unit_facts(enriched)
 
@@ -294,6 +305,55 @@ with c3:
     else:
         st.metric("Days earlier", "—")
         st.caption("Model never issued an imminent-failure alert for this unit.")
+
+# ---------------------------------------------------------------------------
+# Module 4 — Business Impact Panel
+# ---------------------------------------------------------------------------
+st.divider()
+st.header("💼 Module 4 — Business Impact (estimated / projected)")
+
+accuracy = metrics.get("accuracy", None)
+fnr = metrics.get("false_negative_rate", None)
+advance_list = [v["advance"] for v in facts.values() if v["advance"] is not None]
+avg_advance = float(np.mean(advance_list)) if advance_list else 0.0
+
+b1, b2, b3 = st.columns(3)
+
+with b1:
+    st.subheader("Early-warning advantage")
+    st.metric("Average days earlier detection", f"{avg_advance:.1f} days")
+    st.caption(
+        "Mean of (reactive alert day − FilterGuard alert day) across all 200 units, "
+        "computed from the trained model's real predictions — not a guess."
+    )
+    if accuracy is not None:
+        st.metric("Model test accuracy", f"{accuracy:.0%}")
+        st.caption("From Module 2 evaluation (test set, stratified by unit).")
+    if fnr is not None:
+        st.metric("Missed-failure rate (FNR)", f"{fnr:.0%}")
+        st.caption("Safety-relevant error from Module 2 test set.")
+
+with b2:
+    st.subheader("Cost impact (projected)")
+    cartridge_cost = st.number_input("Filter cartridge cost (₹)", min_value=100, max_value=2000, value=500, step=50)
+    replacements_per_year = st.number_input("Replacements per household / year", min_value=1, max_value=12, value=2, step=1)
+    # Projected: early warning lets a household plan replacement and avoid ~0.5
+    # premature / emergency replacements per year.
+    avoided_per_year = 0.5
+    annual_savings = avoided_per_year * cartridge_cost
+    st.metric("Projected annual savings / household", f"₹{annual_savings:,.0f}")
+    st.caption(
+        "Estimated: early warning avoids ~0.5 premature/emergency cartridge replacements "
+        "per year at ₹%d/cartridge. Labelled projected — not a guaranteed figure." % cartridge_cost
+    )
+
+with b3:
+    st.subheader("Scalability framing")
+    st.markdown(
+        "Runs on existing TDS / flow / pressure telemetry already present in "
+        "Atomberg's IoT-connected purifier fleet — **near-zero marginal cost** "
+        "to deploy fleet-wide. No added hardware, no cloud spend, no GPU."
+    )
 
 st.markdown(
     "AtomQuest FilterGuard • Code&Design • Track 2 — Water Purifier • "

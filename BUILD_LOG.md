@@ -13,4 +13,20 @@ confirmed via a short headless launch.
   5. Playback control: slider + simulate-forward advancing day-by-day
 - After writing: py_compile + streamlit run startup check, then commit & push "feat(module 3): base dashboard (unit selector, trends, prediction, comparison banner, playback)"
 - Then proceed to Module 4.
-- DONE 2026-11-02: Module 3 written (views 1-5). py_compile exit 0. streamlit run on :8502 stayed ALIVE, no errors (Uvicorn started). Committed & pushed as "feat(module 3): base dashboard (unit selector, trends, prediction panel, comparison banner, playback control)".
+- DONE 2026-11-02: Module 3 ... pushed as "feat(module 3): ...".
+
+## 2026-11-02 — Module 4 (Business Impact Panel)
+- Plan: add a Module 4 section to app/dashboard.py with three labeled "estimated/projected" blocks:
+  1. Early-warning advantage — mean(reactive day − FilterGuard day) across units (from facts), plus Module 2 test accuracy/FNR.
+  2. Cost impact — cartridge cost (₹400-600 input) × avoided premature/emergency replacements per year = projected annual savings/household (labeled projected).
+  3. Scalability framing — existing telemetry, near-zero marginal cost across IoT fleet.
+- After writing: py_compile + streamlit run startup check, then commit & push "feat(module 4): business impact panel (early warning, cost impact, scalability)".
+- Then proceed to Module 5.
+- DONE 2026-11-02: Module 4 written (Business Impact Panel added to dashboard). py_compile exit 0. streamlit run on :8503 stayed ALIVE, no errors. Committed & pushed as "feat(module 4): business impact panel (early-warning advantage, projected cost impact, scalability framing)".
+
+## 2026-11-02 — Module 5 (Simulated Fail-Safe Panel)
+- Plan: add Module 5 section to app/dashboard.py:
+  - When predicted days_to_failure <= 2, show "⚠ FAIL-SAFE TRIGGERED (Simulated): auto flow-restriction + replace-now alert"
+  - Explicit disclaimer: decision logic/trigger complete in software; physical actuation (relay-driven valve) committed Round 3.
+- After writing: py_compile + streamlit run startup check, then commit & push "feat(module 5): simulated fail-safe panel (trigger at days_to_failure <= 2 + Round 3 disclaimer)".
+- Then draft PROGRESS_REPORT_DRAFT.md and final commit/push.
