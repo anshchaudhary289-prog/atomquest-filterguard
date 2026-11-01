@@ -35,7 +35,7 @@ DATA_PATH = os.path.join(BASE_DIR, "data", "synthetic_filter_data.csv")
 MODEL_PATH = os.path.join(BASE_DIR, "model", "filterguard_model.pkl")
 
 TDS_FAILURE_THRESHOLD = 100.0
-FAIL_PROB_THRESHOLD = 0.5
+FAIL_PROB_THRESHOLD = 0.30
 SLOPE_WINDOW = 5
 
 
@@ -300,9 +300,14 @@ else:
     st.warning("Not enough history yet to compute slope features (need ≥ 2 days).")
 
 # ---------------------------------------------------------------------------
-# View 4 — Comparison banner (the pitch visual)
+# View 4 — Comparison banner (retrospective full-lifecycle comparison)
 # ---------------------------------------------------------------------------
-st.subheader("📡 Reactive vs. FilterGuard — advance warning gained")
+st.subheader("📡 Reactive vs. FilterGuard — advance warning gained (retrospective)")
+st.caption(
+    "This comparison is retrospective: it uses the full lifecycle of the unit "
+    "to show when the reactive threshold and the model would each have fired. "
+    "It is not a real-time prediction."
+)
 c1, c2, c3 = st.columns([1, 1, 1])
 with c1:
     st.markdown("**Reactive alert** (today's purifiers)")
@@ -311,7 +316,7 @@ with c1:
 with c2:
     st.markdown("**FilterGuard alert** (this model, simulated)")
     st.metric("Triggers on day", alert_day if alert_day is not None else "—")
-    st.caption("First day the model's probability of failure within 7 days (computed from readings available that day) exceeded 50%.")
+    st.caption("First day the model's probability of failure within 7 days (computed from readings available that day) exceeded 30%.")
 with c3:
     st.markdown("**Advance warning gained** (simulated)")
     if advance is not None:
