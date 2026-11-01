@@ -355,6 +355,31 @@ with b3:
         "to deploy fleet-wide. No added hardware, no cloud spend, no GPU."
     )
 
+# ---------------------------------------------------------------------------
+# Module 5 — Simulated Fail-Safe Panel
+# ---------------------------------------------------------------------------
+st.divider()
+st.header("🚨 Module 5 — Simulated Fail-Safe Panel")
+
+failsafe_triggered = has_features and pred_days is not None and pred_days <= 2
+
+if failsafe_triggered:
+    st.error(
+        "⚠ **FAIL-SAFE TRIGGERED (Simulated):** auto flow-restriction + replace-now alert  \n"
+        f"Predicted days to failure: {pred_days} day{'s' if pred_days != 1 else ''}  "
+        f"(confidence {prob:.0%})"
+    )
+else:
+    st.success(
+        "✅ Fail-safe not triggered  \n"
+        f"Predicted days to failure: {pred_days if pred_days is not None else 'n/a'}"
+    )
+
+st.caption(
+    "**Decision logic and trigger condition complete and demonstrated in software. "
+    "Physical actuation (relay-driven valve) is the committed first task for Round 3.**"
+)
+
 st.markdown(
     "AtomQuest FilterGuard • Code&Design • Track 2 — Water Purifier • "
     "Prognostics of filter failure using data analytics"
