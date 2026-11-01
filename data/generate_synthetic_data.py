@@ -10,8 +10,11 @@ Simulates N=200 virtual purifier units, each over a filter lifecycle of
   flow_rate_lpm    float  starts ~2.0 L/min, declines as filter clogs (sigma~0.05)
   pressure_diff_psi float starts ~2 psi, rises as filter clogs (sigma~0.1)
   days_to_failure  int    ground truth — days back from the day tds first
-                          crosses the 100 ppm failure threshold
-  failed_within_7d 0/1    1 if days_to_failure <= 7
+                          crosses the 100 ppm failure threshold (0 on failure
+                          day, negative after failure)
+  failed_within_7d 0/1    1 if 0 <= days_to_failure <= 7 (failure day plus
+                          the 7 days before it); post-failure days are NOT
+                          counted as positives
 
 Each unit's degradation rate is randomized +/- 20% so curves are not identical.
 
@@ -78,7 +81,9 @@ def generate_unit(unit_id, rng):
         failure_day = lifecycle  # degenerate guard; should not occur
 
     days_to_failure = failure_day - days
-    failed_within_7d = (days_to_failure <= 7).astype(int)
+    # Positive only during the failure day and the 7 days before it.
+    # Post-failure days (negative days_to_failure) are NOT positives.
+    failed_within_7d = ((days_to_failure >= 0) & (days_to_failure <= 7)).astype(int)
 
     return pd.DataFrame({
         "unit_id": unit_id,

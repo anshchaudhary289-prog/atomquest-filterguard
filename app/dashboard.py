@@ -1,16 +1,20 @@
-"""Module 3 — AtomQuest FilterGuard dashboard (base views 1-5).
+"""Module 3 — AtomQuest FilterGuard dashboard (views 1-5).
 
 Views:
   1. Unit selector — dropdown to pick one of the 200 simulated units.
   2. Live trend charts (plotly) — TDS, flow rate, pressure differential over
      the unit's lifecycle so far, with a vertical line marking "today".
-  3. Prediction panel — "Filter failure predicted in X days" with the model's
-     confidence/probability score of failure within 7 days.
-  4. Comparison banner — side-by-side reactive alert day Y vs FilterGuard
-     alert day Z; Y−Z = advance-warning days gained.
+  3. Prediction panel — model's probability of filter failure within 7 days,
+     computed from current and historical readings only (no future-day scan).
+  4. Comparison banner — reactive alert day Y vs FilterGuard alert day Z
+     (first day the model's probability, computed from readings available at
+     that day, exceeded the threshold); Y−Z = advance-warning days gained.
   5. Playback control — slider + Next/Previous + auto-simulate advancing the
-     selected unit day-by-day so the prediction can be shown firing before
-     the reactive threshold.
+     selected unit day-by-day.
+
+Important: this is a synthetic-data prototype. 100 ppm is the experiment's
+chosen TDS threshold, not a universal filter-failure or drinking-water safety
+standard. All results are simulated, not real purifier field results.
 
 Run:  streamlit run app/dashboard.py
 """
@@ -125,11 +129,14 @@ def unit_facts(df):
 # ---------------------------------------------------------------------------
 st.set_page_config(page_title="AtomQuest FilterGuard", page_icon="💧", layout="wide")
 
-st.title("💧 AtomQuest FilterGuard — Filter Failure Prognostics")
+st.title("💧 AtomQuest FilterGuard — Filter Failure Prognostics (Simulated Prototype)")
 st.caption(
-    "Predicts filter failure 5–7 days in advance using only existing "
-    "TDS / flow / pressure telemetry — no added hardware. "
-    "Track 2 • Water Purifier • Prognostics of filter failure"
+    "Simulated prototype: predicts probability of filter failure within 7 days "
+    "from TDS / flow-rate / pressure-differential telemetry — no added hardware. "
+    "100 ppm is this experiment's chosen TDS threshold, not a universal "
+    "filter-failure or drinking-water safety standard. Results are simulated on "
+    "synthetic data, not real purifier field results. Track 2 • Water Purifier • "
+    "Prognostics of filter failure using data analytics"
 )
 
 df = load_data()
@@ -199,18 +206,10 @@ if has_features:
 else:
     prob = None
 
-pred_days = None
-if has_features:
-    for d in range(today, min(today + 7, lifecycle) + 1):
-        r = unit_df[unit_df["day"] == d]
-        if len(r) == 0 or pd.isna(r.iloc[0]["tds_slope_5d"]):
-            continue
-        p_d = float(
-            model.predict_proba(pd.DataFrame([r.iloc[0][feature_cols]], columns=feature_cols))[0, 1]
-        )
-        if p_d >= FAIL_PROB_THRESHOLD:
-            pred_days = d - today
-            break
+# NOTE: No future-day sensor-reading scan is performed. The prediction uses
+# only current and historical readings available at the selected simulation
+# day. We do not claim an exact days-to-failure forecast; we report the
+# model's probability of failure within the next 7 days.
 
 # ---------------------------------------------------------------------------
 # KPI row
@@ -271,15 +270,16 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader("🔮 Prediction panel")
 if has_features and prob is not None:
     if prob >= FAIL_PROB_THRESHOLD:
-        days_text = "today / imminent" if pred_days == 0 else f"in {pred_days} day{'s' if pred_days != 1 else ''}"
         st.error(
-            f"⚠ **Filter failure predicted {days_text}**  \n"
-            f"Confidence (model probability): **{prob:.0%}**"
+            f"⚠ **Filter failure predicted within 7 days**  \n"
+            f"Model probability of failure: **{prob:.0%}**  \n"
+            f"Based on current and historical readings up to day {today} only. "
+            f"No exact days-to-failure forecast is made."
         )
     else:
         st.success(
             f"✅ No filter failure predicted within the next 7 days  \n"
-            f"Confidence of failure: **{prob:.0%}**"
+            f"Model probability of failure: **{prob:.0%}**"
         )
 else:
     st.warning("Not enough history yet to compute slope features (need ≥ 2 days).")
@@ -292,16 +292,16 @@ c1, c2, c3 = st.columns([1, 1, 1])
 with c1:
     st.markdown("**Reactive alert** (today's purifiers)")
     st.metric("Triggers on day", reactive_day if reactive_day is not None else "—")
-    st.caption("When TDS first crosses the 100 ppm failure threshold — 0 days of warning.")
+    st.caption("When TDS first crosses the 100 ppm threshold (synthetic experiment threshold) — 0 days of warning.")
 with c2:
-    st.markdown("**FilterGuard alert** (this model)")
+    st.markdown("**FilterGuard alert** (this model, simulated)")
     st.metric("Triggers on day", alert_day if alert_day is not None else "—")
-    st.caption("First day the model predicts failure within 7 days (P ≥ 50%).")
+    st.caption("First day the model's probability of failure within 7 days (computed from readings available that day) exceeded 50%.")
 with c3:
-    st.markdown("**Advance warning gained**")
+    st.markdown("**Advance warning gained** (simulated)")
     if advance is not None:
         st.metric("Days earlier", f"{advance} day{'s' if advance != 1 else ''}")
-        st.caption(f"FilterGuard fires {advance} day{'s' if advance != 1 else ''} before the reactive threshold.")
+        st.caption(f"FilterGuard's simulated alert fires {advance} day{'s' if advance != 1 else ''} before the reactive threshold.")
     else:
         st.metric("Days earlier", "—")
         st.caption("Model never issued an imminent-failure alert for this unit.")
@@ -334,25 +334,32 @@ with b1:
         st.caption("Safety-relevant error from Module 2 test set.")
 
 with b2:
-    st.subheader("Cost impact (projected)")
+    st.subheader("Cost impact (illustrative scenario)")
+    st.caption("All figures below are an illustrative scenario — not measured or guaranteed.")
     cartridge_cost = st.number_input("Filter cartridge cost (₹)", min_value=100, max_value=2000, value=500, step=50)
     replacements_per_year = st.number_input("Replacements per household / year", min_value=1, max_value=12, value=2, step=1)
-    # Projected: early warning lets a household plan replacement and avoid ~0.5
-    # premature / emergency replacements per year.
-    avoided_per_year = 0.5
-    annual_savings = avoided_per_year * cartridge_cost
-    st.metric("Projected annual savings / household", f"₹{annual_savings:,.0f}")
+    avoidable_fraction = st.slider(
+        "Fraction of replacements avoidable via early warning",
+        min_value=0.0, max_value=1.0, value=0.25, step=0.05,
+        help="Illustrative assumption: share of annual replacements that early warning could help avoid.",
+    )
+    # Illustrative calculation: annual savings = cartridge cost × replacements/year × avoidable fraction.
+    annual_savings = cartridge_cost * replacements_per_year * avoidable_fraction
+    st.metric("Illustrative annual savings / household", f"₹{annual_savings:,.0f}")
     st.caption(
-        "Estimated: early warning avoids ~0.5 premature/emergency cartridge replacements "
-        "per year at ₹%d/cartridge. Labelled projected — not a guaranteed figure." % cartridge_cost
+        f"Formula: ₹{cartridge_cost} × {replacements_per_year} replacements/year × "
+        f"{avoidable_fraction:.0%} avoidable = ₹{annual_savings:,.0f}/year. "
+        "This is an illustrative scenario, not a measured or guaranteed figure."
     )
 
 with b3:
-    st.subheader("Scalability framing")
+    st.subheader("Scalability framing (illustrative)")
+    st.caption("Illustrative scenario — no field deployment evidence to date.")
     st.markdown(
-        "Runs on existing TDS / flow / pressure telemetry already present in "
-        "Atomberg's IoT-connected purifier fleet — **near-zero marginal cost** "
-        "to deploy fleet-wide. No added hardware, no cloud spend, no GPU."
+        "The prototype runs on TDS / flow / pressure readings. If a purifier "
+        "already exposes this telemetry, adding the model inference step would "
+        "carry near-zero marginal software cost. This is a hypothetical "
+        "scalability statement, not a claim about any real fleet."
     )
 
 # ---------------------------------------------------------------------------
@@ -361,18 +368,21 @@ with b3:
 st.divider()
 st.header("🚨 Module 5 — Simulated Fail-Safe Panel")
 
-failsafe_triggered = has_features and pred_days is not None and pred_days <= 2
+# Fail-safe trigger uses the CURRENT prediction (probability of failure
+# within 7 days from readings available today), not future readings.
+failsafe_triggered = has_features and prob is not None and prob >= FAIL_PROB_THRESHOLD
 
 if failsafe_triggered:
     st.error(
         "⚠ **FAIL-SAFE TRIGGERED (Simulated):** auto flow-restriction + replace-now alert  \n"
-        f"Predicted days to failure: {pred_days} day{'s' if pred_days != 1 else ''}  "
-        f"(confidence {prob:.0%})"
+        f"Model probability of failure within 7 days: **{prob:.0%}**  \n"
+        f"Based on current and historical readings up to day {today} only."
     )
 else:
     st.success(
         "✅ Fail-safe not triggered  \n"
-        f"Predicted days to failure: {pred_days if pred_days is not None else 'n/a'}"
+        f"Model probability of failure within 7 days: "
+        f"{f'{prob:.0%}' if prob is not None else 'insufficient data'}"
     )
 
 st.caption(

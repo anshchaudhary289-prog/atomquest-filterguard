@@ -1,16 +1,16 @@
 {
-  "accuracy": 0.973867019517036,
-  "precision": 0.9692074709742554,
-  "recall": 0.9519087754090233,
-  "f1": 0.9604802401200601,
-  "tn": 3968,
-  "fp": 61,
-  "fn": 97,
-  "tp": 1920,
-  "false_negative_rate": 0.0480912245909767,
-  "false_positive_rate": 0.015140233308513279,
+  "accuracy": 0.9514176753440557,
+  "precision": 0.5828220858895705,
+  "recall": 0.296875,
+  "f1": 0.39337474120082816,
+  "tn": 5643,
+  "fp": 68,
+  "fn": 225,
+  "tp": 95,
+  "false_negative_rate": 0.703125,
+  "false_positive_rate": 0.011906846436701103,
   "train_units": 160,
   "test_units": 40,
-  "train_rows": 24089,
-  "test_rows": 6046
+  "train_rows": 24104,
+  "test_rows": 6031
 }
