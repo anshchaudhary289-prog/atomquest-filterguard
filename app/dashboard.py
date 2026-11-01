@@ -21,6 +21,7 @@ Run:  streamlit run app/dashboard.py
 
 import json
 import os
+import time
 
 import joblib
 import numpy as np
@@ -167,7 +168,16 @@ if st.session_state.sim_day != today:
     st.session_state.sim_day = today
     st.session_state.sim_playing = False
 
-p1, p2 = col_btns.columns(2)
+# Playback speed control
+sim_speed = st.sidebar.select_slider(
+    "Playback speed",
+    options=["Slow", "Normal", "Fast"],
+    value="Normal",
+    help="Delay between auto-advance steps",
+)
+speed_delay = {"Slow": 1.5, "Normal": 0.8, "Fast": 0.3}[sim_speed]
+
+p1, p2, p3 = col_btns.columns(3)
 if p1.button("◀ Prev", use_container_width=True):
     st.session_state.sim_day = max(1, st.session_state.sim_day - 1)
     st.session_state.sim_playing = False
@@ -176,11 +186,16 @@ if p2.button("Next ▶", use_container_width=True):
     st.session_state.sim_day = min(lifecycle, st.session_state.sim_day + 1)
     st.session_state.sim_playing = False
     st.rerun()
+if p3.button("↻ Reset", use_container_width=True):
+    st.session_state.sim_day = 1
+    st.session_state.sim_playing = False
+    st.rerun()
 
 if st.sidebar.button("▶ Simulate forward (auto)", use_container_width=True):
     st.session_state.sim_playing = True
 
 if st.session_state.sim_playing:
+    time.sleep(speed_delay)
     st.session_state.sim_day = min(lifecycle, st.session_state.sim_day + 1)
     if st.session_state.sim_day >= lifecycle:
         st.session_state.sim_playing = False
