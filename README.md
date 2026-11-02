@@ -196,23 +196,35 @@ The Streamlit dashboard (`app/dashboard.py`) provides a simulated demonstration 
 
 ### Screenshots
 
-Genuine dashboard screenshots can be captured by running `streamlit run app/dashboard.py` locally:
+Genuine dashboard screenshots captured from the running Streamlit app:
 
-- `docs/screenshots/dashboard-overview.png` — Main dashboard overview
-- `docs/screenshots/sensor-trends.png` — Sensor trend visualizations
-- `docs/screenshots/failure-risk.png` — Failure-risk prediction panel
-- `docs/screenshots/playback-failsafe.png` — Playback and simulated fail-safe demonstration
+**Normal state — low-risk prediction**
+
+![Dashboard normal state](docs/screenshots/dashboard-normal.png)
+
+*Unit selector, sensor trend charts, and prediction panel showing a low failure probability (~0%).*
+
+**Alert state — fail-safe triggered**
+
+![Dashboard alert state](docs/screenshots/dashboard-alert.png)
+
+*Model probability ≥ 30%, fail-safe panel displayed with simulated alert. Sensor readings and prediction correspond to the selected day.*
+
+**Multi-unit example — unit selection**
+
+![Dashboard multi-unit example](docs/screenshots/dashboard-multi-unit.png)
+
+*Different purifier units selected via the dropdown, showing unit-specific trends and predictions.*
 
 ```
 docs/
 └── screenshots/
-    ├── dashboard-overview.png
-    ├── sensor-trends.png
-    ├── failure-risk.png
-    └── playback-failsafe.png
+    ├── dashboard-normal.png
+    ├── dashboard-alert.png
+    └── dashboard-multi-unit.png
 ```
 
-*Note: Screenshots were not captured in this headless build environment because no visible browser window is available to render the Streamlit UI. Add genuine screenshots locally after running the dashboard.*
+All screenshots are captured from the actual running application — no mock or AI-generated images.
 
 ---
 
@@ -234,7 +246,7 @@ atomquest-filterguard/
 │   ├── test_model_training.py          16 tests for model training/evaluation
 │   └── test_dashboard_logic.py         12 tests for dashboard/fail-safe logic
 ├── docs/
-│   └── screenshots/                    Dashboard screenshots (add locally)
+│   └── screenshots/                    Dashboard screenshots
 ├── requirements.txt                    Runtime dependencies
 ├── requirements-dev.txt                Test dependencies (pytest)
 ├── health_check.py                     Artifact health verification script
