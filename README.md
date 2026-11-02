@@ -40,7 +40,7 @@ The core operational problem is reactive rather than predictive: today's purifie
 
 FilterGuard addresses this by treating filter failure as a binary prediction problem: given the current and historical TDS, flow-rate, and pressure-differential readings, what is the probability that the filter will fail within the next seven days?
 
-The system does **not** predict an exact number of days until failure. Instead, it outputs a calibrated probability of failure within a seven-day window, giving users actionable advance warning to plan cartridge replacement before failure occurs.
+The system does **not** predict an exact number of days until failure. Instead, it outputs a **predicted probability of failure** within a seven-day window, giving users actionable advance warning to plan cartridge replacement before failure occurs.
 
 ---
 
@@ -72,13 +72,13 @@ flowchart LR
 ```
 
 **Module 1 — Data Generation** (`data/generate_synthetic_data.py`)
-Simulates 200 virtual purifier units, each over a 120–180 day filter lifecycle. Each unit's TDS degrades upward on a logistic curve toward a ~150 ppm ceiling, flow rate declines as the filter clogs, and pressure rises as flow declines. Gaussian noise is added to each sensor reading. Each unit's degradation rate is randomized ±20% so curves are not identical.
+Simulates 200 virtual purifier units, each over a 120–180 day filter lifecycle. Each unit's TDS degrades upward on an **exponential curve** toward a ~150 ppm ceiling, flow rate declines as the filter clogs, and pressure rises as flow declines. Gaussian noise is added to each sensor reading. Each unit's degradation rate is randomized ±20% so curves are not identical.
 
 **Module 2 — Model Training** (`model/train_model.py`)
 Engineers trailing 5-day slope features plus current readings and filter age. Trains and compares three models on a unit-level 64/16/20 train/validation/test split. Selects the classification threshold on the validation set only. Saves the trained model and metrics.
 
 **Module 3 — Dashboard** (`app/dashboard.py`)
-Streamlit demo interface with unit selection, live sensor trend charts, failure-risk probability, playback controls, and a retrospective comparison banner.
+Streamlit demo interface with unit selection, **simulated** sensor trend charts (played back from the generated CSV, not live telemetry), failure-risk probability, playback controls, and a retrospective comparison banner.
 
 **Module 4 — Business Impact Panel** (in `app/dashboard.py`)
 Illustrative scenario calculations for early-warning advantage and projected cost savings, clearly labeled as illustrative.
@@ -187,7 +187,7 @@ All metrics below are from the held-out test set (40 units, 6,031 rows), reprodu
 The Streamlit dashboard (`app/dashboard.py`) provides a simulated demonstration of the system:
 
 1. **Unit selector** — dropdown to pick one of the 200 simulated purifier units
-2. **Live sensor trend charts** — Plotly charts of TDS, flow rate, and pressure differential over the unit's lifecycle so far, with a vertical line marking the selected "today" and the 100 ppm failure threshold
+2. **Simulated sensor trend charts** — Plotly charts of TDS, flow rate, and pressure differential played back from the generated synthetic CSV (not live telemetry), over the unit's lifecycle so far, with a vertical line marking the selected "today" and the 100 ppm failure threshold
 3. **Failure-risk prediction** — the model's probability of failure within 7 days, computed from current and historical readings up to the selected day only (no future-day scan)
 4. **Playback controls** — slider plus Previous/Next/Reset buttons and auto-simulate with Slow/Normal/Fast speed options
 5. **Retrospective comparison banner** — explicitly labeled as retrospective; compares the reactive alert day (TDS crosses 100 ppm) vs. the FilterGuard alert day (model probability exceeds threshold) to show simulated advance-warning days gained
@@ -196,21 +196,23 @@ The Streamlit dashboard (`app/dashboard.py`) provides a simulated demonstration 
 
 ### Screenshots
 
-Genuine dashboard screenshots can be added here. Run `streamlit run app/dashboard.py` locally and capture:
+Genuine dashboard screenshots can be captured by running `streamlit run app/dashboard.py` locally:
 
 - `docs/screenshots/dashboard-overview.png` — Main dashboard overview
 - `docs/screenshots/sensor-trends.png` — Sensor trend visualizations
-- `docs/screenshots/failure-prediction.png` — Failure-risk prediction panel
-- `docs/screenshots/fail-safe.png` — Fail-safe demonstration
+- `docs/screenshots/failure-risk.png` — Failure-risk prediction panel
+- `docs/screenshots/playback-failsafe.png` — Playback and simulated fail-safe demonstration
 
 ```
 docs/
 └── screenshots/
     ├── dashboard-overview.png
     ├── sensor-trends.png
-    ├── failure-prediction.png
-    └── fail-safe.png
+    ├── failure-risk.png
+    └── playback-failsafe.png
 ```
+
+*Note: Screenshots were not captured in this headless build environment because no visible browser window is available to render the Streamlit UI. Add genuine screenshots locally after running the dashboard.*
 
 ---
 
