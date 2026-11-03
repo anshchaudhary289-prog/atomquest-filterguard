@@ -34,8 +34,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_PATH = os.path.join(BASE_DIR, "data", "synthetic_filter_data.csv")
 MODEL_PATH = os.path.join(BASE_DIR, "model", "filterguard_model.pkl")
 
-TDS_FAILURE_THRESHOLD = 100.0
-FAIL_PROB_THRESHOLD = 0.30
+from app.config import FAIL_PROB_THRESHOLD, TDS_FAILURE_THRESHOLD
+
 SLOPE_WINDOW = 5
 
 
@@ -316,7 +316,7 @@ with c1:
 with c2:
     st.markdown("**FilterGuard alert** (this model, simulated)")
     st.metric("Triggers on day", alert_day if alert_day is not None else "—")
-    st.caption("First day the model's probability of failure within 7 days (computed from readings available that day) exceeded 30%.")
+    st.caption("First day the model's probability of failure within 7 days (computed from readings available that day) exceeded 20%.")
 with c3:
     st.markdown("**Advance warning gained** (simulated)")
     if advance is not None:

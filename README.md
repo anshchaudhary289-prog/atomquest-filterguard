@@ -168,7 +168,7 @@ All metrics below are from the held-out test set (40 units, 6,031 rows), reprodu
 | False-positive rate | 4.73% |
 | ROC-AUC | 0.96 |
 | Confusion matrix (tn, fp, fn, tp) | (5,441, 270, 92, 228) |
-| Classification threshold | 0.30 (validation-selected) |
+| Classification threshold | 0.20 (operational; 0.30 was validation-selected during training) |
 | Model | GradientBoostingClassifier |
 
 ### Honest Interpretation
@@ -178,7 +178,7 @@ All metrics below are from the held-out test set (40 units, 6,031 rows), reprodu
 - **False-negative rate (28.75%)** means the model misses about 3 out of 10 actual failures — the safety-relevant error.
 - **Precision (45.78%)** means about half of positive predictions are true failures.
 
-**These results are simulated on synthetic data.** The model has **not** been validated on real purifier hardware or field data. The 100 ppm threshold is this experiment's chosen synthetic threshold, not a universal drinking-water safety or filter-replacement standard. The selected threshold (0.30) is experimental and should not be interpreted as production-ready.
+**These results are simulated on synthetic data.** The model has **not** been validated on real purifier hardware or field data. The 100 ppm threshold is this experiment's chosen synthetic threshold, not a universal drinking-water safety or filter-replacement standard. The operational threshold (0.20) is experimental and should not be interpreted as production-ready; the validation-selected threshold during training was 0.30.
 
 ---
 
@@ -191,7 +191,7 @@ The Streamlit dashboard (`app/dashboard.py`) provides a simulated demonstration 
 3. **Failure-risk prediction** — the model's probability of failure within 7 days, computed from current and historical readings up to the selected day only (no future-day scan)
 4. **Playback controls** — slider plus Previous/Next/Reset buttons and auto-simulate with Slow/Normal/Fast speed options
 5. **Retrospective comparison banner** — explicitly labeled as retrospective; compares the reactive alert day (TDS crosses 100 ppm) vs. the FilterGuard alert day (model probability exceeds threshold) to show simulated advance-warning days gained
-6. **Simulated fail-safe panel** — when the model's failure probability ≥ 30%, displays a simulated "FAIL-SAFE TRIGGERED" alert with an explicit disclaimer that physical actuation (relay-driven valve) is committed for Round 3
+6. **Simulated fail-safe panel** — when the model's failure probability ≥ 20%, displays a simulated "FAIL-SAFE TRIGGERED" alert with an explicit disclaimer that physical actuation (relay-driven valve) is committed for Round 3
 7. **Business impact panel** — illustrative scenario calculations for early-warning advantage and projected cost savings, with visible assumptions and user-adjustable inputs; clearly labeled as illustrative, not measured
 
 ### Screenshots
@@ -208,7 +208,7 @@ Genuine dashboard screenshots captured from the running Streamlit app:
 
 ![Dashboard alert state](docs/screenshots/dashboard-alert.png)
 
-*Model probability ≥ 30%, fail-safe panel displayed with simulated alert. Sensor readings and prediction correspond to the selected day.*
+*Model probability ≥ 20%, fail-safe panel displayed with simulated alert. Sensor readings and prediction correspond to the selected day.*
 
 **Multi-unit example — unit selection**
 
@@ -368,7 +368,7 @@ pytest tests/
 - **Illustrative business savings:** Cost impact figures are hypothetical scenarios with visible assumptions, not measured results.
 - **No fleet telemetry evidence:** Scalability claims are hypothetical; no real IoT fleet deployment exists.
 - **Class imbalance:** 94.7% of rows are negatives, which inflates accuracy. The model misses ~3 out of 10 actual failures (FNR 28.75%).
-- **Experimental threshold:** The 0.30 probability threshold was selected on synthetic validation data and is not production-validated.
+- **Experimental threshold:** The 0.30 probability threshold was selected on synthetic validation data during training; the operational threshold is now 0.20 (also selected on synthetic validation data and not production-validated).
 - **100 ppm is not universal:** The TDS failure threshold is this experiment's chosen synthetic value, not a drinking-water safety standard.
 
 ---

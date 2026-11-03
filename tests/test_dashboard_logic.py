@@ -13,9 +13,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Constants matching app/dashboard.py
-TDS_FAILURE_THRESHOLD = 100.0
-FAIL_PROB_THRESHOLD = 0.30
+from app.config import FAIL_PROB_THRESHOLD, TDS_FAILURE_THRESHOLD
 
 
 def test_fail_safe_triggered_when_prob_above_threshold():
@@ -27,14 +25,28 @@ def test_fail_safe_triggered_when_prob_above_threshold():
 
 def test_fail_safe_not_triggered_when_prob_below_threshold():
     """Fail-safe should NOT trigger when probability < threshold."""
-    prob = 0.25
+    prob = 0.15
     triggered = prob >= FAIL_PROB_THRESHOLD
     assert triggered is False
 
 
-def test_fail_safe_at_exact_threshold():
-    """Fail-safe should trigger at exactly the threshold (>= comparison)."""
-    prob = FAIL_PROB_THRESHOLD
+def test_fail_safe_not_triggered_at_0_19():
+    """Fail-safe should NOT trigger when probability is 0.19 (below 0.20 threshold)."""
+    prob = 0.19
+    triggered = prob >= FAIL_PROB_THRESHOLD
+    assert triggered is False
+
+
+def test_fail_safe_triggered_at_0_20():
+    """Fail-safe SHOULD trigger when probability is exactly 0.20 (>= comparison)."""
+    prob = 0.20
+    triggered = prob >= FAIL_PROB_THRESHOLD
+    assert triggered is True
+
+
+def test_fail_safe_triggered_at_0_21():
+    """Fail-safe SHOULD trigger when probability is 0.21 (above 0.20 threshold)."""
+    prob = 0.21
     triggered = prob >= FAIL_PROB_THRESHOLD
     assert triggered is True
 
@@ -86,9 +98,9 @@ def test_tds_failure_threshold_is_100():
     assert TDS_FAILURE_THRESHOLD == 100.0
 
 
-def test_fail_prob_threshold_is_030():
-    """Fail-safe trigger threshold should be 0.30."""
-    assert FAIL_PROB_THRESHOLD == 0.30
+def test_fail_prob_threshold_is_020():
+    """Fail-safe trigger threshold should be 0.20."""
+    assert FAIL_PROB_THRESHOLD == 0.20
 
 
 def test_prediction_uses_current_readings_only():
