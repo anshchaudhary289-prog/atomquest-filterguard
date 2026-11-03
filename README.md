@@ -246,14 +246,12 @@ atomquest-filterguard/
 │   ├── test_model_training.py          16 tests for model training/evaluation
 │   └── test_dashboard_logic.py         12 tests for dashboard/fail-safe logic
 ├── docs/
+│   ├── reports/                        Reports, audits, and verification logs
 │   └── screenshots/                    Dashboard screenshots
 ├── requirements.txt                    Runtime dependencies
 ├── requirements-dev.txt                Test dependencies (pytest)
 ├── health_check.py                     Artifact health verification script
 ├── README.md                           This file
-├── PROGRESS_REPORT_DRAFT.md            Competition progress report draft
-├── BUILD_LOG.md                        Development build log
-├── FINAL_VERIFICATION_REPORT.md        Independent verification audit
 └── SPEC.md                             Original build specification
 ```
 
