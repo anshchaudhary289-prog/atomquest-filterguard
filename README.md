@@ -191,7 +191,7 @@ The Streamlit dashboard (`app/dashboard.py`) provides a simulated demonstration 
 3. **Failure-risk prediction** — the model's probability of failure within 7 days, computed from current and historical readings up to the selected day only (no future-day scan)
 4. **Playback controls** — slider plus Previous/Next/Reset buttons and auto-simulate with Slow/Normal/Fast speed options
 5. **Retrospective comparison banner** — explicitly labeled as retrospective; compares the reactive alert day (TDS crosses 100 ppm) vs. the FilterGuard alert day (model probability exceeds threshold) to show simulated advance-warning days gained
-6. **Simulated fail-safe panel** — when the model's failure probability ≥ 20%, displays a simulated "FAIL-SAFE TRIGGERED" alert with an explicit disclaimer that physical actuation (relay-driven valve) is committed for Round 3
+6. **Simulated fail-safe panel** — when the model's failure probability ≥ 20%, displays a simulated "FAIL-SAFE TRIGGERED" alert with an explicit disclaimer that physical actuation (relay-driven valve) is not part of the Round 3 software roadmap
 7. **Business impact panel** — illustrative scenario calculations for early-warning advantage and projected cost savings, with visible assumptions and user-adjustable inputs; clearly labeled as illustrative, not measured
 
 ### Screenshots
@@ -363,7 +363,7 @@ pytest tests/
 ## Limitations
 
 - **Synthetic data only:** All results are simulated on 200 virtual purifier units. No real purifier hardware or field data was used.
-- **No physical sensors:** No ESP32, TDS sensor, or relay hardware is integrated. Physical actuation is committed for Round 3.
+- **No physical sensors:** No ESP32, TDS sensor, or relay hardware is integrated. Physical actuation is not part of the Round 3 software roadmap.
 - **No real-world validation:** The model has not been tested on actual purifier field data.
 - **Illustrative business savings:** Cost impact figures are hypothetical scenarios with visible assumptions, not measured results.
 - **No fleet telemetry evidence:** Scalability claims are hypothetical; no real IoT fleet deployment exists.
@@ -375,11 +375,9 @@ pytest tests/
 
 ## Future Scope
 
-- **Real sensor integration:** ESP32/Arduino + analog TDS sensor + relay testbed for live data
-- **Hardware fail-safe:** Relay-driven valve actuation when failure probability exceeds threshold
-- **Field-data validation:** Train and evaluate on real purifier telemetry
 - **Model calibration:** Improve recall and reduce false-negative rate through feature engineering and threshold tuning
 - **Production deployment:** Streamlit deployment improvements and multi-user support
+- **Validation planning:** Design field-testing protocol for real purifier telemetry validation
 
 ---
 

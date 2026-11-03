@@ -407,7 +407,7 @@ else:
 
 st.caption(
     "**Decision logic and trigger condition complete and demonstrated in software. "
-    "Physical actuation (relay-driven valve) is the committed first task for Round 3.**"
+    "Physical actuation (relay-driven valve) is not part of the Round 3 software roadmap.**"
 )
 
 st.markdown(

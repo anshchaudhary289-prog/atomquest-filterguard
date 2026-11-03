@@ -228,7 +228,7 @@ No global Python installations modified. Virtual environment used throughout.
 - No claim of ≥85% accuracy as achieved (reports 94.00% with class imbalance caveat) ✓
 - 100 ppm described as synthetic experiment threshold ✓
 - Software-only prototype status clear ✓
-- Hardware integration as Round 3 future work ✓
+- Software-only roadmap clearly documented ✓
 
 ---
 
@@ -270,7 +270,7 @@ No critical issues found that require code changes.
 
 - **End-to-end Streamlit UI interaction:** Verified startup only, not interactive user flows (would require browser automation, which is beyond lightweight verification)
 - **Real purifier hardware:** Not available — all data is synthetic, as documented
-- **Physical fail-safe actuation:** Not implemented — explicitly documented as Round 3 future work
+- **Physical fail-safe actuation:** Not implemented — physical actuation is not part of the Round 3 software roadmap.
 - **Multi-user dashboard concurrency:** Single-user demo only; `time.sleep()` blocking not tested under load
 
 ---

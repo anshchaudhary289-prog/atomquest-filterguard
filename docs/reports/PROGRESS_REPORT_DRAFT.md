@@ -52,7 +52,7 @@ For the 190 of 200 units where the model issued an alert, average simulated adva
 | Module 4 | Business Impact Panel — early-warning advantage, illustrative cost impact scenario, scalability framing (hypothetical only) | Complete |
 | Module 5 | Simulated Fail-Safe Panel — trigger at current model prob ≥ 30%, with Round 3 disclaimer | Complete |
 
-**Sourcing-risk flags (from abstract):** The abstract proposed a physical TDS-sensor + relay accelerated-degradation testbed (ESP32/Arduino, TDS sensor, relay). Components could **not** be sourced within the submission window, so the hardware addendum was cancelled. The team deliberately shipped a complete, validated software pipeline over a rushed/incomplete hardware integration. This was raised as a sourcing risk and resolved by pivoting to software-only.
+**Sourcing-risk flags (from abstract):** The abstract proposed a physical TDS-sensor + relay accelerated-degradation testbed (ESP32/Arduino, TDS sensor, relay). Components could **not** be sourced within the submission window, so the hardware addendum was cancelled. The team deliberately shipped a complete, validated software pipeline over a rushed/incomplete hardware integration. This was raised as a sourcing risk and resolved by pivoting to software-only. Physical actuation is not part of the Round 3 software roadmap.
 
 ---
 
@@ -66,24 +66,23 @@ For the 190 of 200 units where the model issued an alert, average simulated adva
 
 ## 5. Changes since the abstract (hardware pivot stated explicitly)
 
-The original software-only plan became high-risk after the Round 2 guideline change: *"The focus of this round is on hardware prototypes. A software-only prototype will be considered only if the value it delivers is immense."* We evaluated adding a physical TDS sensor + relay testbed but could not source components within the submission window. We prioritized shipping a complete, validated software pipeline (synthetic data generation, trained model at 94.00% accuracy with known limitations, live interactive dashboard, business impact panel, and complete fail-safe decision logic) over a rushed or incomplete hardware integration. Physical sensor/actuator integration is the committed first task for Round 3. This frames the software-only choice as a deliberate engineering trade-off, not an oversight.
+The original software-only plan became high-risk after the Round 2 guideline change: *"The focus of this round is on hardware prototypes. A software-only prototype will be considered only if the value it delivers is immense."* We evaluated adding a physical TDS sensor + relay testbed but could not source components within the submission window. We prioritized shipping a complete, validated software pipeline (synthetic data generation, trained model at 94.00% accuracy with known limitations, live interactive dashboard, business impact panel, and complete fail-safe decision logic) over a rushed or incomplete hardware integration. Physical sensor/actuator integration is not part of the Round 3 software roadmap. This frames the software-only choice as a deliberate engineering trade-off, not an oversight.
 
 ---
 
 ## 6. Status of the safety/fail-safe mechanism
 
-**Module 5 (Simulated Fail-Safe Panel) is complete in software.** When the model's current probability of failure within 7 days ≥ 30% (based on readings available at the selected simulation day only), the dashboard shows a prominent alert: *"⚠ FAIL-SAFE TRIGGERED (Simulated): auto flow-restriction + replace-now alert"*. The panel is explicitly labeled: *"Decision logic and trigger condition complete and demonstrated in software. Physical actuation (relay-driven valve) is the committed first task for Round 3."* Physical relay-driven valve actuation is pending hardware procurement (Round 3).
+**Module 5 (Simulated Fail-Safe Panel) is complete in software.** When the model's current probability of failure within 7 days ≥ 30% (based on readings available at the selected simulation day only), the dashboard shows a prominent alert: *"⚠ FAIL-SAFE TRIGGERED (Simulated): auto flow-restriction + replace-now alert"*. The panel is explicitly labeled: *"Decision logic and trigger condition complete and demonstrated in software. Physical actuation (relay-driven valve) is not part of the Round 3 software roadmap."* Physical relay-driven valve actuation is not planned for Round 3.
 
 ---
 
 ## 7. Planned next steps for Round 3
 
-1. Procure and assemble the physical TDS-sensor + relay testbed (ESP32/Arduino, analog TDS module, 5V relay, water container) — same-day local sourcing, no online ordering given timeline.
-2. Build the accelerated-degradation method: progressively raise TDS via measured salt increments over a short session; stream live TDS (+ flow, if added) to the trained model for live prediction.
-3. Wire the physical fail-safe: relay triggers LED + buzzer (or simulated inlet shutoff) when the model predicts failure within 7 days — the explicit Round 2 video/report requirement #5.
-4. Improve model recall (currently 71.25%, FNR 28.75%) — address class imbalance and feature quality before any real deployment.
-5. Replace simulated dashboard input with the live ESP32 feed for the on-camera demo.
-6. Record the Round 2 video (plain phone recording sufficient) and finalize the progress report PDF.
+1. **Improve model recall (currently 71.25%, FNR 28.75%)** — address class imbalance and feature quality before any real deployment.
+2. **Dashboard improvements** — enhance the user interface, add more playback controls, and refine the fail-safe panel display.
+3. **Model calibration** — refine probability calibration and threshold selection using validation data.
+4. **Validation planning** — design a field-testing protocol for real purifier telemetry validation once hardware becomes available.
+5. **Record the Round 2 video (plain phone recording sufficient) and finalize the progress report PDF.**
 
 ---
 

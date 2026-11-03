@@ -183,7 +183,7 @@ and documented synthetic-data limitation.
 - **Synthetic data only:** All results simulated on 200 virtual units. No real purifier hardware or field data used.
 - **100 ppm threshold:** This experiment's chosen synthetic threshold, not a universal filter-failure or drinking-water safety standard.
 - **No exact days-to-failure forecast:** Model predicts probability within 7 days only, not an exact number of days.
-- **Fail-safe is simulated:** Physical actuation (relay-driven valve) is committed for Round 3, not implemented.
+- **Fail-safe is simulated:** Physical actuation (relay-driven valve) is not part of the Round 3 software roadmap, not implemented.
 - **Dashboard auto-play:** Uses `time.sleep()` which blocks the Streamlit thread; acceptable for single-user demo but not production-scale.
 
 ---
@@ -251,6 +251,6 @@ Plus 6 pre-existing commits (f7a8b4a through 0117064) for a total of 15 commits 
 ## 13. Any tasks that remain unfinished and why
 
 - **Model recall improvement (FNR 28.75%):** The model still misses ~3 out of 10 failures. Further work needed on feature engineering, class imbalance handling, or threshold tuning before real-world deployment. Not completed because it requires careful validation and may not significantly improve results on this synthetic dataset.
-- **Physical hardware integration:** ESP32/Arduino + TDS sensor + relay testbed could not be sourced within the submission window. Committed as Round 3 first task.
-- **Live ESP32 feed:** Dashboard currently uses synthetic data only. Live hardware feed integration pending Round 3 hardware procurement.
+- **Physical hardware integration:** ESP32/Arduino + TDS sensor + relay testbed could not be sourced within the submission window. Physical hardware integration is not part of the Round 3 software roadmap.
+- **Live ESP32 feed:** Dashboard currently uses synthetic data only. Live hardware feed integration is not part of the Round 3 software roadmap.
 - **Auto-play production scaling:** `time.sleep()` blocks the Streamlit thread; acceptable for single-user demo but would need a different approach (e.g., JavaScript frontend) for production.
